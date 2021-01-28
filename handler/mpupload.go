@@ -8,6 +8,7 @@ import (
 	dblayer "network-disk/db"
 	"network-disk/util"
 	"os"
+	"path"
 	"strconv"
 	rPool "network-disk/cache/redis"
 	"strings"
@@ -64,6 +65,8 @@ func UploadPartHandler(w http.ResponseWriter, r *http.Request){
 	rConn := rPool.RedisPool().Get()
 	defer rConn.Close()
 	// 3.获得文件句柄,用于存储分块内容
+	fpath := "/data/" + uploadID + "/" +chunkIndex
+	os.MkdirAll(path.Dir(fpath), 0744)
 	fd, err := os.Create("/data/"+uploadID+"/"+chunkIndex)
 	if err!=nil{
 		w.Write(util.NewRespMsg(-1, "Upload part failed", nil).JSONBytes())
